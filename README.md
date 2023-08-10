@@ -1,1 +1,2 @@
-# dog_jacket
+# DoggyDynamic -- Canine smart jacket
+This innovative wearable device has been designed to capture every lively canine movement using an inertial measurement unit sensor. Featuring seamless acceleration and gyroscope data upload to Firebase Dataset via Wi-Fi, it employs machine learning algorithms to bring a 3d model of the dog to life. As well as visualizing movements in real-time, a scroll controller enables users to select from past dates and times on an interactive webpage. Share the joy and curiosity – simply scan the QR code and step into a world where your dog's actions become a captivating journey.
