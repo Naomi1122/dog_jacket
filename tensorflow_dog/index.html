@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Pitch Training Accuracy</title>
+  </head>
+  <body>
+    <h3 id="waiting-msg">Waiting for server...</h3>
+    <p>
+    <span style="font-size:16px" id="trainingStatus"></span>
+    <p>
+    <div id="predictContainer" style="font-size:16px;display:none">
+      Sensor data: <span id="predictSample"></span>
+      <button style="font-size:18px;padding:5px;margin-right:10px" id="predict-button">Predict Pitch</button><p>
+      Predicted Pitch Type: <span style="font-weight:bold" id="predictResult"></span>
+    </div>
+    <script src="dist/bundle.js"></script>
+    <style>
+      html,
+      body {
+        font-family: Roboto, sans-serif;
+        color: #5f6368;
+      }
+      body {
+        background-color: rgb(248, 249, 250);
+      }
+    </style>
+  </body>
+</html>
+    <script type="module">
+    // Import the functions you need from the SDKs you need
+    //const testSample = [2.668,-114.333,-1.908,4.786,25.707,-45.21,78,0]; // Curveball
+    //const pitchClassResult = pitch_type.pitchFromClassNum(pitch_type.predictSample(testSample));
+    //console.log('Test Sample Pitch Class: ${pitchClassResult}');
+  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+    import { getFirestore, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZAiahjyaU4il1wpxvhVLmQE6pYWpkCEI",
+      authDomain: "doggydynamic.firebaseapp.com",
+      projectId: "doggydynamic",
+      storageBucket: "doggydynamic.appspot.com",
+      messagingSenderId: "451258203225",
+      appId: "1:451258203225:web:781f85e964b36fd5c84548",
+      measurementId: "G-PQ554RVT9H"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    var data = document.getElementById('predictResult').string;
+    setDoc(doc(db, "test", "test"), {data: data });
+  </script>
+
+
+
+
