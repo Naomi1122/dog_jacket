@@ -1,4 +1,4 @@
-<p align='center'><img width="300px" style="display:block; margin:0 auto;" src="https://res.cloudinary.com/alvarosaburido/image/upload/v1621848301/projects/vitesome/logotype_zq9g5i.png" alt="D1">
+<p align='center'><img width="300px" style="display:block; margin:0 auto;" src=["https://github.com/Naomi1122/doggydynamic/blob/main/doggy/src/assets/dl.jpg"] alt="D1">
 </p>
 
 <p align='center'>
