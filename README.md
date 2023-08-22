@@ -11,9 +11,8 @@
 
 ## Features
 
+<p align='center'><a href='https://youtu.be/U2X2EhxnU6o/'> Demo Video</a><p>
 
-
-<p align='center'><a href="https://vitesome.alvarosaburido.dev/"> Live Demo</a><p>
 
 ## You can help me keep working on this project 💚
 
