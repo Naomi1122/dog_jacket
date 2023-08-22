@@ -12,8 +12,8 @@
 ## Video Demo
 Click on the image below to watch the demo video:
 
-[![IMAGE ALT TEXT HERE]([https://youtu.be/Z-ft3IRLkws)](https://youtu.be/U2X2EhxnU6o)
 
+[![IMAGE ALT TEXT HERE]([https://youtu.be/U2X2EhxnU6o](https://youtu.be/U2X2EhxnU6o))
 
 ## You can help me keep working on this project 💚
 
