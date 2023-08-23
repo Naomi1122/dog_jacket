@@ -1,4 +1,5 @@
 
+
 #define SDA_PIN D2
 #define SCL_PIN D1
 #define USE_NODE_MCU_BOARD
@@ -7,11 +8,10 @@
 #include <ESP8266WebServer.h>
 #include <PubSubClient.h>
 #include <Wire.h>
-#include <Adafruit_MMA8451.h>
-#include <Adafruit_LSM303_Accel.h>
+
 #include <Adafruit_Sensor.h>
 #include <Adafruit_LSM6DSO32.h>
-#include <TinyGPS++.h>
+
 #include <SoftwareSerial.h>
 #include <ezTime.h>
 #define FIREBASE_PROJECT_ID "doggydynamic"
@@ -55,7 +55,7 @@ DFRobot_ST7789_240x240_HW_SPI screen(/*dc=*/TFT_DC,/*cs=*/TFT_CS,/*rst=*/TFT_RST
  * @param gdl Screen object
  * @param touch Touch object
  */
-DFRobot_UI ui(&screen, NULL);
+//DFRobot_UI ui(&screen, NULL);
 
 float voltage;
 int bat_percentage;
@@ -83,20 +83,7 @@ const int buttonPin = 10;
 
 const char* ssid = SECRET_SSID;
 const char* password = SECRET_PASS;
-/*
-const char* mqttuser = SECRET_MQTTUSER;
-const char* mqttpass = SECRET_MQTTPASS;
 
-//ESP8266WebServer server(80);
-const char* mqtt_server = "mqtt.cetools.org";
-WiFiClient espClient;
-PubSubClient client(espClient);
-long lastMsg = 0;
-char msg[50];
-int value = 0;
-*/
-//Adafruit_MMA8451 mma = Adafruit_MMA8451();
-//Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
 Adafruit_LSM6DSO32 dso32;
 
 
@@ -104,28 +91,21 @@ void setup(void) {
   Serial.begin(115200);
   pinMode(buttonPin, INPUT_PULLUP);
 
-  
+  screen.begin();
 
-  ui.begin();
-  ui.setTheme(DFRobot_UI::MODERN);
+  // ui.begin();
+  // ui.setTheme(DFRobot_UI::MODERN);
 
-  //Create a progress bar control
-  DFRobot_UI::sBar_t &bar1 = ui.creatBar();
-  /** User-defined progress bar parameters */
-  bar1.setStyle(DFRobot_UI::COLUMN);
-  bar1.fgColor = COLOR_RGB565_GREEN;
-  bar1.setCallback(barCallback1);
-  ui.draw(&bar1,/*x=*/33,/*y=*/screen.height()/5*3);
-  ui.drawString(/*x=*/33,/*y=*/screen.height()/5*2.5,"Battery Capacity",COLOR_RGB565_WHITE,ui.bgColor,/*fontsize =*/2,/*Invert=*/0);
+  // //Create a progress bar control
+  // DFRobot_UI::sBar_t &bar1 = ui.creatBar();
+  // /** User-defined progress bar parameters */
+  // bar1.setStyle(DFRobot_UI::COLUMN);
+  // bar1.fgColor = COLOR_RGB565_GREEN;
+  // bar1.setCallback(barCallback1);
+  // ui.draw(&bar1,/*x=*/33,/*y=*/screen.height()/5*3);
+  // ui.drawString(/*x=*/33,/*y=*/screen.height()/5*2.5," Battery Capacity ",COLOR_RGB565_WHITE,ui.bgColor,/*fontsize =*/2,/*Invert=*/0);
 
 
-  configF.api_key = API_KEY;
-  auth.user.email = USER_EMAIL;
-  auth.user.password = USER_PASSWORD;
-  configF.token_status_callback = tokenStatusCallback;
-  configF.max_token_generation_retry = 5;
-  Firebase.begin(&configF, &auth);
-  Firebase.reconnectWiFi(true);
 
   if (!dso32.begin_I2C()) {
 
@@ -256,7 +236,13 @@ void setup(void) {
   // run initialisation functions
   startWifi();
   //startWebserver();
-
+  configF.api_key = API_KEY;
+  auth.user.email = USER_EMAIL;
+  auth.user.password = USER_PASSWORD;
+  configF.token_status_callback = tokenStatusCallback;
+  configF.max_token_generation_retry = 5;
+  Firebase.begin(&configF, &auth);
+  Firebase.reconnectWiFi(true);
 
   // start MQTT server
   //client.setServer(mqtt_server, 1884);
@@ -276,9 +262,9 @@ void loop() {
       //sendMQTT();
       //client.loop();
       //screenTime();
-      batteryCapacity();
-      ui.refresh();
       firebasepush();
+      batteryCapacity();
+      //ui.refresh();
       screenTime();
   }
 }
@@ -301,67 +287,6 @@ void startWifi() {
   Serial.println(WiFi.localIP());
 }
 
-/*
-void sendMQTT() {
-
-  if (!client.connected()) {
-    reconnect();
-  }
-  client.loop();
-
-  sensors_event_t accel;
-  sensors_event_t gyro;
-  sensors_event_t temp;
-  dso32.getEvent(&accel, &gyro, &temp);
-
-  LSM6_temp = temp.temperature;
-  snprintf (msg, 50, "%.2f", LSM6_temp);
-  Serial.print("Temperature ");
-  Serial.print(msg);
-  Serial.println(" deg C");
-  client.publish("student/ucfnjc0/accel/lsm6D_temp", msg);
-
-  LSM6_AX = accel.acceleration.x;
-  snprintf (msg, 50, "%.2f", LSM6_AX);
-  Serial.print("Publish message for lsm6D AX: ");
-  Serial.print(msg);
-  Serial.println(" m/s^2");
-  client.publish("student/ucfnjc0/accel/lsm6D_acceleration_x", msg);
-
-  LSM6_AY = accel.acceleration.y;
-  snprintf (msg, 50, "%.2f", LSM6_AY);
-  Serial.print("Publish message for lsm6D AY: ");
-  Serial.print(msg);
-  Serial.println(" m/s^2");
-  client.publish("student/ucfnjc0/accel/lsm6D_acceleration_y", msg);
-
-  LSM6_AZ = accel.acceleration.z;
-  snprintf (msg, 50, "%.2f", LSM6_AZ);
-  Serial.print("Publish message for lsm6D AZ: ");
-  Serial.print(msg);
-  Serial.println(" m/s^2");
-  client.publish("student/ucfnjc0/accel/lsm6D_acceleration_z", msg);
-
-  LSM6_GX = gyro.gyro.x;
-  snprintf (msg, 50, "%.2f", LSM6_GX);
-  Serial.print("Publish message for lsm6D GX: ");
-  Serial.print(msg);
-  Serial.println(" radians/s");
-  client.publish("student/ucfnjc0/accel/lsm6D_gyro_x", msg);
-
-  LSM6_GY = gyro.gyro.y;
-  snprintf (msg, 50, "%.2f", LSM6_GY);
-  Serial.print("Publish message for lsm6D GY: ");
-  Serial.print(msg);
-  Serial.println(" radians/s");
-  client.publish("student/ucfnjc0/accel/lsm6D_gyro_y", msg);
-
-  LSM6_GZ = gyro.gyro.z;
-  snprintf (msg, 50, "%.2f", LSM6_GZ);
-  Serial.print("Publish message for lsm6D GZ: ");
-  Serial.print(msg);
-  Serial.println(" radians/s");
-  client.publish("student/ucfnjc0/accel/lsm6D_gyro_z", msg);
 /*
   while (SerialGPS.available() > 0)
     if (gps.encode(SerialGPS.read()))
@@ -386,16 +311,17 @@ void sendMQTT() {
   delay(10000);
 }
 */
-void barCallback1(DFRobot_UI:: sBar_t &obj){
-    //Enable the progress bar plus 1 in each time, it enters the callback function.
-  delay(50);
-  obj.setValue(bat_percentage);
-	//if(value1 < 100) value1++;
-}
+// void barCallback1(DFRobot_UI:: sBar_t &obj){
+//     //Enable the progress bar plus 1 in each time, it enters the callback function.
+//   delay(50);
+//   obj.setValue(bat_percentage);
+// 	//if(value1 < 100) value1++;
+// }
 
 void screenTime(){
-  while(1){
+  
     screen.setTextColor(0x30FF);
+    screen.fillScreen(COLOR_RGB565_BLACK);
     screen.setTextSize(3);
     screen.setCursor(30, 30);
     String Date = String(GB.dateTime("Y-m-d"));
@@ -403,8 +329,16 @@ void screenTime(){
     screen.setCursor(30, 60);
     String Time = String(GB.dateTime("H:i"));
     screen.println(Time);
-    delay(10);
-  }
+    screen.setTextColor(COLOR_RGB565_GREEN);
+    screen.setTextSize(2.3);
+    screen.setCursor(20, 100);
+    screen.print("Battery Capacity");
+    screen.println(":");
+    screen.setTextSize(3);
+    screen.setCursor(70, 130);
+    screen.print(bat_percentage);
+    screen.println("%");
+    delay(20000);
   
 }
 void syncDate() {
@@ -418,7 +352,7 @@ void syncDate() {
 void batteryCapacity(){
   sensorValue = analogRead(analogInPin);
   voltage = (((sensorValue * 3.3) / 1024) * 2 + calibration); //multiply by two as voltage divider network is 100K & 100K Resistor
-  bat_percentage = mapfloat(voltage, 4.2, 2.8, 0, 100); //2.8V as Battery Cut off Voltage & 4.2V as Maximum Voltage
+  bat_percentage = mapfloat(voltage, 2.8, 4.2, 0, 100); //2.8V as Battery Cut off Voltage & 4.2V as Maximum Voltage
   if (bat_percentage >= 100)
   {
     bat_percentage = 100;
@@ -446,6 +380,10 @@ void batteryCapacity(){
        if (bat_percentage <=30)
     {
       Serial.println("Battery level below 30%, Charge battery on time");
+      screen.setTextColor(COLOR_RGB565_RED);
+      screen.fillScreen(COLOR_RGB565_BLACK);
+      screen.setTextSize(2.5);
+      screen.println("Battery level below 30%, Charge battery on time");
       delay(500);
     }
 }
@@ -454,49 +392,14 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-/*
-void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)payload[i]);
-  }
-  Serial.println();
 
-}
-
-void reconnect() {
-  // Loop until we're reconnected
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    // Create a random client ID
-    String clientId = "ESP8266Client-";
-    clientId += String(random(0xffff), HEX);
-    
-    // Attempt to connect with clientID, username and password
-    if (client.connect(clientId.c_str(), mqttuser, mqttpass)) {
-      Serial.println("connected");
-      // ... and resubscribe
-      client.subscribe("student/ucfnjc0/accel/inTopic");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
-  }
-}
-*/
 void firebasepush(void){
 
   static unsigned long printTimepoint = millis();
-  if (millis() - printTimepoint > 1000U) {
+  if (millis() - printTimepoint > 60000U) {
     printTimepoint = millis();
-    
 
-    String documentPath = String(GB.dateTime("Y-m-d")) + "/" + String(GB.dateTime("H:i:s"));
+    String documentPath = String(GB.dateTime("Y-m-d")) + "/" + String(GB.dateTime("H:i"));
     FirebaseJson content;
 
     sensors_event_t accel;
@@ -504,10 +407,12 @@ void firebasepush(void){
     sensors_event_t temp;
     dso32.getEvent(&accel, &gyro, &temp);
     LSM6_temp = temp.temperature;
+    Serial.println(LSM6_temp);
     content.set("fields/temp/doubleValue", String(LSM6_temp).c_str());
     LSM6_AX = accel.acceleration.x;
     content.set("fields/AX/doubleValue", String(LSM6_AX).c_str());
     LSM6_AY = accel.acceleration.y;
+    Serial.println(LSM6_AY);
     content.set("fields/AY/doubleValue", String(LSM6_AY).c_str());
     LSM6_AZ = accel.acceleration.z;
     content.set("fields/AZ/doubleValue", String(LSM6_AZ).c_str());
