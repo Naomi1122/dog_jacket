@@ -16,11 +16,11 @@ export default {
   name: 'Threejs',
   props: ['name'],
   watch: {
-    // 每当 question 改变时，这个函数就会执行
+    // listen to task
     name(newQuestion, oldQuestion) {
-      console.log(newQuestion, '新值')
+      console.log(newQuestion, 'new')
       scene.remove(model)
-      // 如果模型有动画相关的资源 
+      // load animations
       model.animations.forEach(animationClip => {
         animationClip.tracks.forEach(track => track.dispose());
       });
@@ -36,7 +36,7 @@ export default {
           scene.add(model);
           that.mixer = new THREE.AnimationMixer(model);
           const clips = gltf.animations;
-          const clip = THREE.AnimationClip.findByName(clips, that.name);
+          const clip = THREE.AnimationClip.findByName(clips, name);
           const action = that.mixer.clipAction(clip);
           action.timeScale = 5;
           action.play();

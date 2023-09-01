@@ -2,15 +2,18 @@
   <el-cascader :options="options" @change="handleChange" />
 </template>
 <script setup>
+
 const emit = defineEmits(['emitName']);
+//options = {dataArray};
+const currentDate = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');
 const options = [
   {
-    value: '2023-08-19',
-    label: '2023-08-19',
+    value: currentDate,
+    label: currentDate,
     children: [
       {
-        value: '0',
-        label: 'sitting',
+        value: '12:00',
+        label: '12:00',
         children: [
           {
             value: 'sitting',
@@ -19,8 +22,8 @@ const options = [
         ],
       },
       {
-        value: '1',
-        label: 'walking',
+        value: '13:00',
+        label: '13:00',
         children: [
           {
             value: 'walking',
@@ -29,8 +32,8 @@ const options = [
         ],
       },
       {
-        value: '2',
-        label: 'running',
+        value: '14:00',
+        label: '14:00',
         children: [
           {
             value: 'running',
@@ -39,8 +42,8 @@ const options = [
         ],
       },
       {
-        value: '1',
-        label: 'standing',
+        value: '15:00',
+        label: '15:00',
         children: [
           {
             value: 'standing',
@@ -49,8 +52,8 @@ const options = [
         ],
       },
       {
-        value: '1',
-        label: 'lying',
+        value: '16:00',
+        label: '16:00',
         children: [
           {
             value: 'lying',
@@ -68,24 +71,58 @@ const handleChange = (value) => {
 </script>
 <script>
 
-import { collection, onSnapshot } from 'firebase/firestore'
-import db from '../firebase/init.js'
+// import { collection, onSnapshot } from 'firebase/firestore'
+// import db from '../firebase/init.js'
 
+
+// export default {
+//   data() {
+//     return {
+//       users: []
+//     }
+//   },
+//   mounted() {
+//     onSnapshot(collection(db, '2023-08-18'), (snap) => {
+
+// snap.forEach((doc) => {
+//   this.users.push(doc.data())
+// })
+// })
+//     }
+//   }
+// //console.log(users);
+import moment from 'moment';
 
 export default {
   data() {
     return {
-      users: []
-    }
+      dataArray: []
+    };
   },
-  mounted() {
-    onSnapshot(collection(db, '2023-08-18'), (snap) => {
+  created() {
+    this.generateDataArray();
+  },
+  methods: {
+    generateDataArray() {
+      const yesterdayDate = moment().subtract(1, 'days').format('YYYY-MM-DD');
+      const currentHour = moment().format('HH');
 
-snap.forEach((doc) => {
-  this.users.push(doc.data())
-})
-})
+      const options = ['standing', 'walking', 'lying', 'sitting', 'running'];
+
+      const dateItem = {
+        value: yesterdayDate,
+        label: yesterdayDate,
+        children: []
+      };
+
+      for (let i = 0; i <= currentHour; i++) {
+        const label = moment().set('hour', i).format('HH');
+        const value = i % options.length;
+        dateItem.children.push({ value: options[value], label });
+      }
+
+      this.dataArray.push(dateItem);
     }
   }
-//console.log(users);
+};
 </script>

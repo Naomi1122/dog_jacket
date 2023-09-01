@@ -43,7 +43,9 @@ export default {
     return {
       temp: '',
       bat: '',
-      date:''
+      date:'',
+      currentDate: '',
+      currentTime: '',
     }
   },
   created() {
@@ -57,14 +59,18 @@ export default {
   methods: {
     async getdata() {
       const currentDate = moment(new Date()).format('YYYY-MM-DD');
+      const currentTime = moment(new Date()).format('HH:mm');
+      //console.log(currentTime);
 
-      onSnapshot(doc(db, '2023-08-18', '00:00:08'), (snap) => {
+      onSnapshot(doc(db, '2023-08-23', '14:35'), (snap) => {
         this.temp = snap.data().temp
         this.bat = snap.data().battery_Capacity
       })
     },
     getCurrentDate() {
       this.date = moment(new Date()).format('YYYY-MM-DD, hh:mm');
+      this.currentDate = moment(new Date()).format('YYYY-MM-DD');
+      this.currentTime = moment(new Date()).format('HH:mm');
     }
   },
   setup() {
@@ -85,14 +91,14 @@ export default {
     <h1 class="mainTitle">{{ msg }}</h1>
     <p>
       {{t('Temp')}}
-      ：{{ temp }}
+      ：{{ this.temp }}
     </p>
     <p>
       {{t('Bat')}}
-      ：{{ bat }}
+      ：{{ this.bat }}
     </p>
     <p>
-      {{ date }}
+      {{ this.date }}
     </p>
     <!-- <p>
       {{t('recomended-ide')}}
